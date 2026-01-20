@@ -1,0 +1,106 @@
+AWS EC2 Connect with RDS
+Steps: Create IAM Role, Create RDS, Create EC2, Create S3 bucket and upload files.
+1.	In AWS Management Console:
+a.	IAM  >  Role > Create Role
+b.	Select Trusted entity type: AWS Service
+c.	Use Case: EC2
+d.	Click Next
+e.	Add Permissions: AmazonRDSDataFullAccess, AmazonS3FullAccess
+f.	Click Next
+g.	Role Name: EC2_RDS_S3_Role
+h.	Click create role
+
+2.	In AWS Management Console:
+a.	RDS > Databases > Create database
+b.	Engine Options: MySQL
+c.	Templates: Dev/Test
+d.	Availability and durability: Single-AZ DB instance deployment (1 instance)
+e.	DB cluster identifier: database-1
+f.	Credentials Settings: Master username : admin
+g.	Credentials management: Self-managed
+h.	Master password: admin1234
+i.	Confirm master password: admin1234
+j.	Rest all setting keep default
+k.	Public access: No
+l.	Existing VPC security groups: default (keep selected)
+m.	Click Create database
+
+3.	In AWS Management Console:
+a.	EC2 > Security Groups > default
+b.	Inbound Rules > Add Rule
+i.	Type : MySQL/Aurora
+ii.	Source: custom
+iii.	Port: 0.0.0.0/0
+c.	Click Save rules
+
+4.	In AWS Management Console:
+a.	EC2 > Launch Instance
+b.	Name and tags: pythonappserver
+c.	Application and OS Image: Ubuntu (Ubuntu Server 24.04 LTS (HVM),EBS General Purpose (SSD) Volume Type)
+d.	Instance Type: (t2.micro/ t3.micro) Free tier
+e.	Key pair: Add existing / create new key pair
+f.	Rest all setting keep default
+g.	Click Launch Instance
+5.	Connect to EC2 instance from WSL Ubuntu.
+a.	Copy .pem file
+b.	Use command : ssh -i "<your-pem-file>.pem" ubuntu@<ec2-public-ip>
+
+6.	Run these commands:
+1. sudo apt update -y
+2. Install pip - sudo apt install python3-pip
+3. Check version - pip3 --version
+4. Install Python - sudo apt install python3-full
+5.  Check Python version - python3 --version
+6. mkdir pythonapp
+7. cd pythonapp
+8. sudo apt install -y python3-venv
+9. python3 -m venv venv
+10. source venv/bin/activate
+11. pip install mysql-connector-python
+12. sudo apt update
+13. sudo apt install -y mysql-client-core-8.0
+14. mysql -h mydb.xxxxxx.ap-south-1.rds.amazonaws.com -u admin -p
+15. mysql> CREATE DATABASE testdb;
+ 
+ Output: Query OK, 1 row affected (0.01 sec)
+
+ 
+Copy app.py code from github project into app.py file created with command: nano app.py
+
+Run the code:
+16. ~/pythonapp$ python app.py
+
+Output:
+
+Connected to RDS!
+Table 'employees' created (or already exists).
+Inserted sample records.
+
+---- EMPLOYEES TABLE ----
+(1, 'Priyanka', 'Training')
+(2, 'Alex', 'IT')
+(3, 'Sam', 'Finance')
+
+ 
+
+Reading S3 Bucket from python code running on EC2
+
+Steps:  use the same ec2 instance to run the python code that reads the S3 bucket.
+ 
+
+1.	cd pythonapp
+2.	source venv/bin/activate
+3.	pip install boto3
+4.	nano reads3.py
+copy reads3.py code from github repository into the new file opened.
+5.	Python reads3.py
+Output:
+Files in S3 bucket 'at-mytestbucket':
+
+Sample.txt
+images/
+images/coffee1.jpg
+
+
+
+ 
