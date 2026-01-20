@@ -41,6 +41,8 @@ d.	Instance Type: (t2.micro/ t3.micro) Free tier
 e.	Key pair: Add existing / create new key pair
 f.	Rest all setting keep default
 g.	Click Launch Instance
+h. Add the IAM Role (EC2_RDS_S3_Role) to the launch instance: Select instance, under Actions > Security > Modify IAM Role > Select the Role.
+
 5.	Connect to EC2 instance from WSL Ubuntu.
 a.	Copy .pem file
 b.	Use command : ssh -i "<your-pem-file>.pem" ubuntu@<ec2-public-ip>
